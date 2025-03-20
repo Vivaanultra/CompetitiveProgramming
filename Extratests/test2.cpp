@@ -1,9 +1,9 @@
-
 #include <iostream>
 #include <chrono>
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <sstream>
 
 using namespace std;
 using namespace std::chrono;
@@ -11,6 +11,7 @@ using namespace std::chrono;
 string testOutput(bool useTie, bool useEndl) {
     const int iterations = 10000;
     
+    // If useTie is true, disable the tie between cin and cout and unsync C I/O.
     if (useTie) {
         cin.tie(0);
         ios_base::sync_with_stdio(false);
@@ -18,7 +19,7 @@ string testOutput(bool useTie, bool useEndl) {
     
     auto start = high_resolution_clock::now();
     
-    for(int i = 0; i < iterations; i++) {
+    for (int i = 0; i < iterations; i++) {
         if (useEndl) {
             cout << i << endl;
         } else {
@@ -45,14 +46,18 @@ int main() {
     vector<string> results;
     cout << "Testing all combinations of cin.tie(0) and endl vs \\n\n\n";
     
-    // Test all combinations
-    results.push_back(testOutput(false, false));  // without tie, with \n
-    results.push_back(testOutput(false, true));   // without tie, with endl
-    results.push_back(testOutput(true, false));   // with tie, with \n
-    results.push_back(testOutput(true, true));    // with tie, with endl
+    // Test all combinations:
+    // 1. without cin.tie(0), with '\n'
+    results.push_back(testOutput(false, false));
+    // 2. without cin.tie(0), with endl
+    results.push_back(testOutput(false, true));
+    // 3. with cin.tie(0), with '\n'
+    results.push_back(testOutput(true, false));
+    // 4. with cin.tie(0), with endl
+    results.push_back(testOutput(true, true));
     
     cout << "\nResults:\n";
-    for(const auto& result : results) {
+    for (const auto &result : results) {
         cout << result << '\n';
     }
     
