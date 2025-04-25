@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/CompetitiveProgramming/Extratests",
-      "program": "c:/CompetitiveProgramming/Extratests/build/Debug/outDebug",
+      "cwd": "c:/CompetitiveProgramming",
+      "program": "c:/CompetitiveProgramming/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
