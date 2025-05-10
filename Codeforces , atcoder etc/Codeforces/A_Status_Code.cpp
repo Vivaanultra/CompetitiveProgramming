@@ -2,14 +2,14 @@
 using namespace std;
 int main()
 {
-    int a;
-    cin >> a;
-    if( a >= 200 && a <= 299)
+    int n;
+    cin >> n;
+    if (n >= 200 && n <= 299)
     {
-        cout << "Success";
+        cout << "Success" << endl;
     }
     else
     {
-        cout << "Failure";
+        cout << "Failure" << endl;
     }
 }
