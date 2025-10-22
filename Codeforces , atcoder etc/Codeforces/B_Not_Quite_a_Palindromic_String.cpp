@@ -1,60 +1,47 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <numeric>
-#include <algorithm>
+#include <bits/stdc++.h>
+
+using namespace std;
 
 void solve() {
     int n, k;
-    std::cin >> n >> k;
-    std::string s;
-    std::cin >> s;
+    cin >> n >> k;
+    string s;
+    cin >> s;
 
-    int count0 = 0;
-    int count1 = 0;
+    int zeros = 0;
+    int ones = 0;
     for (char c : s) {
         if (c == '0') {
-            count0++;
+            zeros++;
         } else {
-            count1++;
+            ones++;
         }
     }
 
-    int num_total_pairs = n / 2;
-    int num_bad_pairs_needed = num_total_pairs - k;
+    int bad_pairs_needed = (n / 2) - k;
 
-    // Zeros and ones needed for these bad pairs
-    int zeros_for_bad = num_bad_pairs_needed;
-    int ones_for_bad = num_bad_pairs_needed;
-
-    if (count0 < zeros_for_bad || count1 < ones_for_bad) {
-        std::cout << "NO" << std::endl;
+    if (zeros < bad_pairs_needed || ones < bad_pairs_needed) {
+        cout << "NO\n";
         return;
     }
 
-    // Remaining zeros and ones are for the k good pairs
-    int remaining_zeros_for_good = count0 - zeros_for_bad;
-    // int remaining_ones_for_good = count1 - ones_for_bad; // Not strictly needed for check
+    int rem_zeros = zeros - bad_pairs_needed;
+    int rem_ones = ones - bad_pairs_needed;
 
-    // As derived, remaining_zeros_for_good + remaining_ones_for_good == 2 * k.
-    // For these 2k characters to form k good pairs,
-    // remaining_zeros_for_good must be even (which implies remaining_ones_for_good is also even).
-    
-    // Also, remaining_zeros_for_good must be non-negative. This is covered by the check above.
-    // (count0 >= zeros_for_bad implies remaining_zeros_for_good >= 0)
-
-    if (remaining_zeros_for_good % 2 == 0) {
-        std::cout << "YES" << std::endl;
-    } else {
-        std::cout << "NO" << std::endl;
+    if (rem_zeros % 2 != 0 || rem_ones % 2 != 0) {
+        cout << "NO\n";
+        return;
     }
+
+    cout << "YES\n";
 }
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(NULL);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
     int t;
-    std::cin >> t;
+    cin >> t;
     while (t--) {
         solve();
     }

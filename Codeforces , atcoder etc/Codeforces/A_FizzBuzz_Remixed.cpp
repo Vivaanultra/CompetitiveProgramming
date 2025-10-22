@@ -1,30 +1,24 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main()
-{
+void solve() {
+    long long n;
+    cin >> n;
+    long long total_numbers = n + 1;
+    long long num_blocks = total_numbers / 15;
+    long long leftover_count = total_numbers % 15;
+    long long result = num_blocks * 3;
+    result += min(leftover_count, 3LL);
+    cout << result << endl;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     int t;
     cin >> t;
-    while(t--)
-    {
-        long long n;
-        cin >> n;
-        
-        // Calculate complete cycles
-        long long complete_cycles = n / 15;
-        long long count = complete_cycles * 3; // 3 numbers per cycle: 0, 1, 2
-        
-        // Check remaining numbers
-        long long remainder = n % 15;
-        for(int i = 0; i <= remainder; i++)
-        {
-            if(i%3 == i%5)
-            {
-                count++;
-            }
-        }
-        
-        cout << count << "\n";
+    while(t--) {
+        solve();
     }
     return 0;
 }

@@ -1,29 +1,39 @@
-#include <iostream>
- 
+#include<bits/stdc++.h>
+
 using namespace std;
- 
+
+bool is_possible(long long n, long long m, long long k, long long max_len) {
+    if (max_len == 0) return false;
+    long long desks_per_row = m / (max_len + 1) * max_len + min(m % (max_len + 1), max_len);
+    return desks_per_row * n >= k;
+}
+
 void solve() {
-    long long n, m, k, l, r, mid;
+    long long n, m, k;
     cin >> n >> m >> k;
-    l = 0, r = m;
-    
-    while (l + 1 < r) {
-        mid = (l + r) / 2;
-        if ((m / (mid + 1) * mid + m % (mid + 1)) * n >= k) {
-            r = mid;
+
+    long long low = 1, high = m, ans = m;
+
+    while (low <= high) {
+        long long mid = low + (high - low) / 2;
+        if (n * (m - (m / (mid + 1))) >= k) {
+            ans = mid;
+            high = mid - 1;
         } else {
-            l = mid;
+            low = mid + 1;
         }
     }
-    
-    cout << r << endl;
-} 
- 
+
+    cout << ans << endl;
+}
+
 int main() {
-    int t = 1;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
     cin >> t;
     while (t--) {
         solve();
     }
-    
+    return 0;
 }

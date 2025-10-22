@@ -1,20 +1,21 @@
-#include <iostream> // Include the input/output stream library
+#include <bits/stdc++.h>
+
+using namespace std;
+
+void solve() {
+    long long n;
+    cin >> n;
+    long long result = (n * n) / 4 + 1;
+    cout << result << endl;
+}
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(NULL);
-
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
     int t;
-    std::cin >> t;
-
+    cin >> t;
     while (t--) {
-        long long n;
-        std::cin >> n;
-
-        long long distinct_values = (n * n) / 4 + 1;
-
-        std::cout << distinct_values << "\n";
+        solve();
     }
-
     return 0;
 }

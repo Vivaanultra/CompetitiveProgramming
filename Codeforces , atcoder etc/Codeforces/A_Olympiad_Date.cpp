@@ -1,41 +1,43 @@
 #include <bits/stdc++.h>
-using namespace std;   
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    int testcases;
-    cin >> testcases;
-    vector<int> required = {0,1,0,3,2,0,2,5};  // 01032025
-    vector<int> count(10, 0);
-    for(int x : required) count[x]++;
-    
-    while(testcases--)
-    {
-        int length;
-        cin >> length;
-        vector<int> current(10, 0);
-        int answer = -1;
-        
-        for(int i = 0; i < length; i++)
-        {
-            int x;
-            cin >> x;
-            current[x]++;
-            
-            bool possible = true;
-            for(int d = 0; d < 10; d++) {
-                if(current[d] < count[d]) {
-                    possible = false;
-                    break;
-                }
-            }
-            
-            if(possible && answer == -1) {
-                answer = i + 1;
+
+using namespace std;
+
+void solve() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+    }
+
+    map<int, int> required;
+    required[0] = 3; 
+    required[1] = 1;
+    required[2] = 2;
+    required[3] = 1;
+    required[5] = 1;
+
+    int total_needed = 8;
+    for (int i = 0; i < n; ++i) {
+        if (required.count(a[i]) && required[a[i]] > 0) {
+            required[a[i]]--;
+            total_needed--;
+            if (total_needed == 0) {
+                cout << i + 1 << endl;
+                return;
             }
         }
-        
-        cout << (answer == -1 ? 0 : answer) << "\n";
     }
+    cout << 0 << endl;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+    return 0;
 }

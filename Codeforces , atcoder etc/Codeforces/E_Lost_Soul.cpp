@@ -1,164 +1,88 @@
-#include <iostream>
-#include <vector>
-#include <numeric>
-#include <algorithm>
-#include <map>
-#include <set>
+#include <bits/stdc++.h>
 
-// Using standard library components for competitive programming
+// Using standard namespace for competitive programming
 using namespace std;
-
-// Calculates the maximum matches for a single value 'v' based on the counts
-// of its occurrences in the four parity pools (a_even, a_odd, b_even, b_odd).
-long long calculate_matches_for_value(long long ae, long long ao, long long be, long long bo) {
-    long long matches = 0;
-    // Rule 1: Match a_even with b_even
-    long long m1 = min(ae, be);
-    matches += m1;
-    ae -= m1;
-    be -= m1;
-
-    // Rule 2: Match a_odd with b_odd
-    long long m2 = min(ao, bo);
-    matches += m2;
-    ao -= m2;
-    bo -= m2;
-
-    // Rule 3: Match leftover a_even with leftover a_odd
-    long long m3 = min(ae, ao);
-    matches += m3;
-    
-    // Rule 4: Match leftover b_even with leftover b_odd
-    long long m4 = min(be, bo);
-    matches += m4;
-
-    return matches;
-}
-
-// Helper to get a value from a map, returning 0 if the key doesn't exist.
-long long get_val(const map<int, int>& m, int key) {
-    auto it = m.find(key);
-    if (it == m.end()) return 0;
-    return it->second;
-}
 
 void solve() {
     int n;
     cin >> n;
-    vector<int> a(n + 1), b(n + 1);
-    set<int> distinct_vals; // Use a set to efficiently track all unique values
+    vector<int> a(n), b(n);
+    
+    // last_a[v] stores the last (rightmost) 1-based index where value v appears in array a.
+    vector<int> last_a(n + 1, 0);
+    // last_b[v] stores the last (rightmost) 1-based index where value v appears in array b.
+    vector<int> last_b(n + 1, 0);
 
-    for (int i = 1; i <= n; ++i) {
+    for (int i = 0; i < n; ++i) {
         cin >> a[i];
-        distinct_vals.insert(a[i]);
+        last_a[a[i]] = i + 1;
     }
-    for (int i = 1; i <= n; ++i) {
+    for (int i = 0; i < n; ++i) {
         cin >> b[i];
-        distinct_vals.insert(b[i]);
+        last_b[b[i]] = i + 1;
     }
 
-    long long max_matches = 0;
+    // Precomputing the rightmost index a value 'v' can reach in each propagation chain.
+    // max_i_Sa[v] is the max index i such that v is in the set of available values for a[i].
+    vector<int> max_i_Sa(n + 1, 0);
+    // max_i_Sb[v] is the max index i such that v is in the set of available values for b[i].
+    vector<int> max_i_Sb(n + 1, 0);
 
-    // --- Scenario 1: No removal ---
-    // Calculate matches with original parities for all n elements.
-    map<int, int> cae_no_rem, cao_no_rem, cbe_no_rem, cbo_no_rem;
+    for (int v = 1; v <= n; ++v) {
+        max_i_Sa[v] = max(last_a[v], (last_b[v] > 0 ? last_b[v] - 1 : 0));
+        max_i_Sb[v] = max(last_b[v], (last_a[v] > 0 ? last_a[v] - 1 : 0));
+    }
+
+    // M[i] will be true if a match is possible at index i.
+    vector<bool> M(n + 2, false);
+    // We iterate from right to left to build the DP state.
+    // M[i] depends on M[i+1].
+    for (int i = n; i >= 1; --i) {
+        // Check if a[i-1] is available in the value pool for b[i]
+        bool a_in_Sa_next = (i + 1 <= max_i_Sa[a[i - 1]]);
+        // Check if b[i-1] is available in the value pool for a[i]
+        bool b_in_Sb_next = (i + 1 <= max_i_Sb[b[i - 1]]);
+        
+        M[i] = (a[i - 1] == b[i - 1]) || a_in_Sa_next || b_in_Sb_next || M[i + 1];
+    }
+
+    // Calculate prefix sums of possible matches.
+    vector<int> pref_ans(n + 1, 0);
     for (int i = 1; i <= n; ++i) {
-        if (i % 2 == 0) {
-            cae_no_rem[a[i]]++;
-            cbe_no_rem[b[i]]++;
-        } else {
-            cao_no_rem[a[i]]++;
-            cbo_no_rem[b[i]]++;
-        }
+        pref_ans[i] = pref_ans[i - 1] + (M[i] ? 1 : 0);
     }
 
-    long long no_removal_matches = 0;
-    for (int val : distinct_vals) {
-        no_removal_matches += calculate_matches_for_value(
-            get_val(cae_no_rem, val), get_val(cao_no_rem, val),
-            get_val(cbe_no_rem, val), get_val(cbo_no_rem, val));
+    // Calculate suffix sums of possible matches.
+    vector<int> suf_ans(n + 2, 0);
+    for (int i = n; i >= 1; --i) {
+        suf_ans[i] = suf_ans[i + 1] + (M[i] ? 1 : 0);
     }
-    max_matches = no_removal_matches;
 
-    // --- Scenario 2: Removal of an element k ---
-    // We use a sliding window for the removal index k.
-    // L_counts: elements before removed item k (indices 1..k-1), original parity.
-    // R_counts: elements after removed item k (indices k+1..n), flipped parity.
-    map<int, int> cae_L, cao_L, cbe_L, cbo_L;
-    map<int, int> cae_R, cao_R, cbe_R, cbo_R;
-
-    // Initialize for removing k=1. L group is empty, R group contains 2..n.
-    for (int i = 2; i <= n; ++i) {
-        if (i % 2 == 0) { cae_R[a[i]]++; cbe_R[b[i]]++; }
-        else { cao_R[a[i]]++; cbo_R[b[i]]++; }
-    }
+    // The answer without any removal is the total possible matches.
+    int max_matches = suf_ans[1]; 
     
-    long long current_total_matches = 0;
-    for (int val : distinct_vals) {
-        // When removing k, L elements have original parity, R elements have flipped parity.
-        // new_ae = cae_L + cao_R, new_ao = cao_L + cae_R, etc.
-        current_total_matches += calculate_matches_for_value(
-            get_val(cao_R, val), get_val(cae_R, val),
-            get_val(cbo_R, val), get_val(cbe_R, val));
+    // Iterate through all possible single-removal positions k.
+    for (int k = 1; k <= n; ++k) {
+        // Matches if we remove k is sum of matches in prefix [1..k-1] and suffix [k+1..n].
+        int current_matches = (k > 1 ? pref_ans[k - 1] : 0) + (k < n ? suf_ans[k + 1] : 0);
+        if (current_matches > max_matches) {
+            max_matches = current_matches;
+        }
     }
-    max_matches = max(max_matches, current_total_matches);
 
-    // Slide the removal point k from 2 to n.
-    for (int k = 2; k <= n; ++k) {
-        // This loop calculates the matches when removing index k.
-        // It transitions from the state of "removing k-1" to "removing k".
-        
-        // The values affected are a/b at k-1 (moving into L group) and k (moving out of R group).
-        set<int> affected_vals;
-        affected_vals.insert(a[k - 1]); affected_vals.insert(b[k - 1]);
-        if (k <= n) {
-             affected_vals.insert(a[k]); affected_vals.insert(b[k]);
-        }
-       
-        // 1. Subtract the old contributions of the affected values.
-        for (int val : affected_vals) {
-            long long ae = get_val(cae_L, val) + get_val(cao_R, val);
-            long long ao = get_val(cao_L, val) + get_val(cae_R, val);
-            long long be = get_val(cbe_L, val) + get_val(cbo_R, val);
-            long long bo = get_val(cbo_L, val) + get_val(cbe_R, val);
-            current_total_matches -= calculate_matches_for_value(ae, ao, be, bo);
-        }
-        
-        // 2. Update the L and R count maps to reflect the new split point.
-        // Element k-1 moves into the L group (unaffected parity).
-        if ((k - 1) % 2 == 0) { cae_L[a[k-1]]++; cbe_L[b[k-1]]++; }
-        else { cao_L[a[k-1]]++; cbo_L[b[k-1]]++; }
-
-        // Element k is now removed, so it exits the R group (flipped parity).
-        if (k <= n) {
-            if (k % 2 == 0) { cae_R[a[k]]--; cbe_R[b[k]]--; }
-            else { cao_R[a[k]]--; cbo_R[b[k]]--; }
-        }
-        
-        // 3. Add back the new contributions of the affected values.
-        for (int val : affected_vals) {
-            long long ae = get_val(cae_L, val) + get_val(cao_R, val);
-            long long ao = get_val(cao_L, val) + get_val(cae_R, val);
-            long long be = get_val(cbe_L, val) + get_val(cbo_R, val);
-            long long bo = get_val(cbo_L, val) + get_val(cbe_R, val);
-            current_total_matches += calculate_matches_for_value(ae, ao, be, bo);
-        }
-        max_matches = max(max_matches, current_total_matches);
-    }
-    
     cout << max_matches << endl;
 }
 
 int main() {
-    // Fast I/O for competitive programming
+    // Fast I/O
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    
+
     int t;
     cin >> t;
     while (t--) {
         solve();
     }
-    
+
     return 0;
 }

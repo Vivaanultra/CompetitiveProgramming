@@ -2,24 +2,20 @@
 using namespace std;
 int main()
 {
-    int testcases;
-    cin>>testcases;
-    while(testcases--)
+    int t;
+    cin >> t;
+    while (t--)
     {
         int a , b , c;
-        cin>>a>>b>>c;
-        vector<int> vec(3);
-        vec[0] = a;
-        vec[1] = b;
-        vec[2] = c;
-        sort(vec.begin(),vec.end());
-        if(vec[1]+vec[2] >= 10)
+        cin >> a >> b >> c;
+        if(a+b >= 10 || b+c >= 10 || a+c >= 10)
         {
-            cout<<"YES"<< "\n";
+            cout << "YES" << endl;
         }
         else
         {
-            cout<<"NO"<<"\n";
+            cout << "NO" << endl;
         }
     }
+    return 0;
 }

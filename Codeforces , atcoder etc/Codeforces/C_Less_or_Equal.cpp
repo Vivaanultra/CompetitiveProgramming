@@ -2,35 +2,33 @@
 using namespace std;
 int main()
 {
-    int length , k;
-    cin >> length >> k;
-    vector<int> v(length);
-    for (int i = 0; i < length; i++)
+    int nums, letx;
+    cin >> nums >> letx;
+    vector<int> v(nums);
+    for (int i = 0; i < nums; i++)
     {
         cin >> v[i];
     }
     sort(v.begin(), v.end());
-    if(k == 0)
+    if(letx == 0)
     {
         if(v[0] == 1)
         {
-            cout << "-1 ";
-            return 0;
+            cout << -1 << "\n";
         }
-        if(v[0] != 1)
+        else
         {
-            cout << 1;
-            return 0;
+            cout << 1 << "\n";
         }
-    }
-    if(v[k] == v[k-1])
-    {
-        cout << "-1 ";
         return 0;
     }
-    if(v[k] != v[k-1])
+    if(v[letx-1] == v[letx])
     {
-        cout << v[k - 1];
-        return 0;
+        cout << -1 << "\n";
     }
+    else
+    {
+        cout << v[letx-1] << "\n";
+    }
+    return 0;
 }

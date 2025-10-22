@@ -1,26 +1,32 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-
 
 int main()
 {
-    int testcases;
-    cin >> testcases;
-    for (int i = 0; i < testcases; i++)
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    cin >> t;
+    while (t--)
     {
-        int num;
-        cin >> num;
-        string str;
-        cin >> str;
-        int count = 0;
-                for(int j = 0; j < num; j++) {
-                    string temp = str;
-                    temp[j] = (temp[j] == '1') ? '0' : '1';
-                    for(int k = 0; k < num; k++) {
-                        if(temp[k] == '1') count++;
-                    }
-                }
-                cout << count << endl;
-        
+        int ln;
+        cin >> ln;
+        string s;
+        cin >> s;
+        int onecnt = 0;
+        int zercnt = 0;
+        for(int i = 0; i < ln; i++)
+        {
+            if(s[i] == '1')
+            {
+                onecnt++;
+            }
+            else{
+                zercnt++;
+            }
+        }
+        int ans = onecnt*(onecnt - 1) + zercnt*(onecnt + 1);
+        cout << ans << "\n";
     }
+    return 0;
 }
