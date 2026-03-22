@@ -147,5 +147,6 @@
     "typeindex": "cpp",
     "typeinfo": "cpp",
     "variant": "cpp"
-  }
+  },
+  "terminal.integrated.customGlyphs": false
 }
